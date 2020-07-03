@@ -11,7 +11,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-public class PersonInterfaceClassRepository implements PersonInterfaceClass {
+public class PIClassRep implements PIClass {
     private static final String FIND_BY_ID = "SELECT * FROM person where person_id = ?";
     public static final String FIND_BY_NAME_LIKE = "SELECT * FROM person where first_name LIKE ?";
     public static final String FIND_ALL="SELECT * FROM person";
@@ -25,20 +25,16 @@ public class PersonInterfaceClassRepository implements PersonInterfaceClass {
 
         return person;
     }
-/*
-*    PersonDAO PersonDAO = new PersonDAO();
-        person = PersonDAO.create(person);
-        System.out.println(person);
-        return null;*/
+
     @Override
-    public List<Person> findAll() {
+    public Collection<Person> findAll() {
         List<Person> personList=new ArrayList<>();
 
         try(
                 Connection connection=dbConnection.getConnection();
                 PreparedStatement statement=connection.prepareStatement(FIND_ALL);
                 ResultSet resultSet=statement.executeQuery();
-                ) {
+        ) {
             while(resultSet.next())
             {
                 personList.add(createPerson(resultSet));
@@ -48,20 +44,18 @@ public class PersonInterfaceClassRepository implements PersonInterfaceClass {
         }
 
 
-return personList;
-
+        return personList;
     }
 
     @Override
     public Optional<Person> findById(int id) {
-
         Optional<Person> optionalPerson = Optional.empty();
 
         try(
                 Connection connection= dbConnection.getConnection();
                 PreparedStatement statement = createFindById(connection,FIND_BY_ID ,id);
                 ResultSet resultSet= statement.executeQuery();
-                ) {
+        ) {
 
             while(resultSet.next())
             {
@@ -72,10 +66,9 @@ return personList;
         }
         return optionalPerson;
     }
-
     private Person createPerson(ResultSet resultSet) throws SQLException {
         return new Person(
-                   resultSet.getInt("person_id"),
+                resultSet.getInt("person_id"),
                 resultSet.getString("first_name"),
                 resultSet.getString("last_name")
         );
@@ -87,7 +80,6 @@ return personList;
         statement.setInt(1,id);
         return statement;
     }
-
     @Override
     public Collection<Person> findByName(String name) {
         List<Person> result = new ArrayList<>();
@@ -131,15 +123,18 @@ return personList;
 
     @Override
     public int deleteById(int id) {
-        int rowsAffected = 0;
 
+        int rowsAffected = 0;
+/*
         try (Connection connection = dbConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(DELETE_PERSON)) {
             rowsAffected = statement.executeUpdate();
 
         } catch (SQLException ex) {
             ex.printStackTrace();
-        }
+        }*/
         return rowsAffected;
+
+
     }
-    }
+}

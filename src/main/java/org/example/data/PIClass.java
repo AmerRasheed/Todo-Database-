@@ -5,7 +5,7 @@ import org.example.model.Person;
 import java.util.Collection;
 import java.util.Optional;
 
-public interface PersonInterfaceClass {
+public interface PIClass {
     Person create(Person person);
     Collection<Person> findAll();
     Optional<Person> findById(int id);

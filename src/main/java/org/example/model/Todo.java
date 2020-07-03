@@ -21,7 +21,7 @@ public class Todo {
         }
 
         public Todo(String todoItemTitle, String description, LocalDate todoitemDeadline, Boolean isDoneStatus) {
-                this(0,todoItemTitle,description,todoitemDeadline,isDoneStatus,47);
+                this(0,todoItemTitle,description,todoitemDeadline,isDoneStatus,1);
         }
 
         public int getTodoId() {

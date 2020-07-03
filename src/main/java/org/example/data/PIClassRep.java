@@ -132,9 +132,12 @@ public class PIClassRep implements PIClass {
 
         } catch (SQLException ex) {
             ex.printStackTrace();
-        }*/
+
+ */
         return rowsAffected;
 
 
     }
+
 }
+

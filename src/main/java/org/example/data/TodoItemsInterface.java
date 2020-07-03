@@ -10,7 +10,7 @@ public interface TodoItemsInterface {
 
     Todo create(Todo todo);
     Collection<Todo> findAll();
-    Todo findById(int id);
+    Optional<Todo> findById(int id);
     Collection<Todo> findByDoneStatus(boolean isDone);
     Collection<Todo> findByAssignee(int AssigneeId);
     Collection<Todo> findByAssignee(Person person);

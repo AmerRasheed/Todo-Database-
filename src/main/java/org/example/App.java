@@ -21,29 +21,57 @@ public class App
         Person man=new Person("Tobias","Carlsson");
 
       //  System.out.println(man);
-       Person value = personDAO.create(man);
-       // System.out.println(value);
+     //91  Person value = personDAO.create(man);
+    //92    System.out.println(value);
 
         //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
-
-//PersonInterfaceClass personDAO1= new PersonInterfaceClassRepository();
-PIClass personDAO1= new PIClassRep();
-      //  System.out.println(personDAO1.findById(50));
-
-
-        personDAO1.findByName("Amer").forEach(System.out::println);    //
-
-//personDAO1.findAll().forEach(System.out::println);
-//personDAO1.deleteById(22);
-
+              PIClass personDAO1= new PIClassRep();
+              personDAO1.findByName("Amer").forEach(System.out::println);    //
 
         //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
-
+// putting items
         ToodDAO itemInDB = new ToodDAO();
-        Todo item = new Todo("Handla","Från Willys", LocalDate.parse("2020-02-05"),true);
+        Todo item = new Todo("Shopping","From Willys", LocalDate.parse("2020-07-04"),true);
+        Todo item1 = new Todo("Work","Doing TodoJDBC assignment By Erik", LocalDate.parse("2020-07-03"),true);
+        Todo item2 = new Todo("Work","Covering previous assigments", LocalDate.parse("2020-06-26"),true);
+        Todo item3 = new Todo("House","Fixation during vacations", LocalDate.parse("2020-07-17"),true);
+        Todo item4 = new Todo("Car","Besiktning", LocalDate.parse("2020-11-01"),true);
 
-        item = itemInDB.create(item);
-        System.out.println(item);
+        //PIClass personDAO1= new PIClassRep();        personDAO1.findByName("Amer").forEach(System.out::println);
+
+        TodoItemsInterface todoItems = new TodoItemsInterfaceRepositoty();
+        System.out.println(todoItems.findById(30));;
+
+// Assigning item (task) to Assignee
+        //93     item = itemInDB.create(item);
+        //94     item1 = itemInDB.create(item1);
+        //95    item2 = itemInDB.create(item2);
+        //96     item3 = itemInDB.create(item3);
+        //97    item4 = itemInDB.create(item4);
+
+        //98    System.out.println(item);
+      //99   System.out.println(item1);
+        // 100 System.out.println(item2);
 
     }
 }
+/*
+
+Since THIS CODE was not GENERAting itemID
+        ToodDAO toodDAO= new ToodDAO();
+        Todo itemAssigned = new Todo(  "Passport"   ,"Apply "    ,LocalDate.parse("2021-09-01"),false);
+                              //this(0,todoItemTitle, description,todoitemDeadline              ,isDoneStatus,1);
+        Todo itemValue = toodDAO.create(itemAssigned);    // THe problem was here as "toodDAO.create(itemAssigned);" was not being assigned to item object i.e. itemValue
+        System.out.println(itemAssigned);
+  */
+
+/*
+*  Todo item5 = new Todo("Car","Service due", LocalDate.parse("2020-07-25"),true);
+        Todo item6 = new Todo("Tour","Stockholm", LocalDate.parse("2020-07-27"),true);
+        Todo item7 = new Todo("House","June Bills payments", LocalDate.parse("2020-06-28"),true);
+        Todo item8 = new Todo("House","HSB query address", LocalDate.parse("2020-07-01"),true);
+        Todo item9 = new Todo("Work","Do certification plan", LocalDate.parse("2020-07-17"),true);
+        Todo item10 = new Todo("Work","Job applications start", LocalDate.parse("2020-09-01"),true);
+        Todo item11 = new Todo("Shopping","Cocos Oil from Lidl", LocalDate.parse("2020-07-03"),true);
+*
+* */

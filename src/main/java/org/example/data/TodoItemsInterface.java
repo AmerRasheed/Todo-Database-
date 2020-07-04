@@ -15,5 +15,5 @@ public interface TodoItemsInterface {
     Collection<Todo> findByAssignee(int AssigneeId);
     Collection<Todo> findByAssignee(Person person);
     Collection<Todo> findByUnassigneeTodoItems();
-    boolean deleteById(int todoItemsId);
+    int deleteById(int todoItemsId);
 }

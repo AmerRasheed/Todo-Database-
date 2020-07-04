@@ -123,21 +123,20 @@ public class PIClassRep implements PIClass {
 
     @Override
     public int deleteById(int id) {
-
         int rowsAffected = 0;
-/*
+
         try (Connection connection = dbConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(DELETE_PERSON)) {
-            rowsAffected = statement.executeUpdate();
+            statement.setInt(1, id);
+             rowsAffected = statement.executeUpdate();
+             rowsAffected++;
+            System.out.println("Record number " + id +  " is deleted");
 
         } catch (SQLException ex) {
             ex.printStackTrace();
+        }
 
- */
         return rowsAffected;
-
-
     }
-
 }
 

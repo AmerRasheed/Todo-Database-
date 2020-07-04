@@ -26,7 +26,13 @@ public class App
 
         //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
               PIClass personDAO1= new PIClassRep();
-              personDAO1.findByName("Amer").forEach(System.out::println);    //
+              personDAO1.findByName("Amer").forEach(System.out::println);
+
+              // 90 System.out.println(personDAO1.findAll());
+              // 91 System.out.println(personDAO1.findById(23));
+              // 92 System.out.println(personDAO1.findByName("Hamid"));
+
+        personDAO1.deleteById(94);
 
         //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 // putting items
@@ -40,7 +46,11 @@ public class App
         //PIClass personDAO1= new PIClassRep();        personDAO1.findByName("Amer").forEach(System.out::println);
 
         TodoItemsInterface todoItems = new TodoItemsInterfaceRepositoty();
-        System.out.println(todoItems.findById(30));;
+       // System.out.println(todoItems.findById(30));
+       // System.out.println(todoItems.findAll());
+        System.out.println(todoItems.findByAssignee(47));
+       // todoItems.deleteById(130);
+
 
 // Assigning item (task) to Assignee
         //93     item = itemInDB.create(item);

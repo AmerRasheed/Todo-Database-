@@ -8,13 +8,16 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 public class TodoItemsInterfaceRepositoty implements TodoItemsInterface{
     private static final String FIND_BY_ID = "SELECT * FROM todo_item where todo_id = ?";
     public static final String FIND_BY_NAME_LIKE = "SELECT * FROM todo_item where title LIKE ?";
     public static final String FIND_ALL="SELECT * FROM todo_item";
+    public static final String FIND_ALL_ASSIGNEE ="SELECT * FROM todo_item where assignee_id= ?";
     private static final String DELETE_PERSON = "DELETE FROM todo_item WHERE todo_id=?" ;
     @Override
     public Todo create(Todo todo) {
@@ -35,7 +38,20 @@ public class TodoItemsInterfaceRepositoty implements TodoItemsInterface{
 
     @Override
     public Collection<Todo> findAll() {
-        return null;
+        List<Todo> todoList = new ArrayList<>();
+        try(
+                Connection connection=dbConnection.getConnection();
+                PreparedStatement statement=connection.prepareStatement(FIND_ALL);
+                ResultSet resultSet=statement.executeQuery();
+        ) {
+            while(resultSet.next())
+            {
+                todoList.add(createTodo(resultSet));
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return todoList;
     }
 
     @Override
@@ -52,7 +68,7 @@ public class TodoItemsInterfaceRepositoty implements TodoItemsInterface{
             while(resultSet.next())
             {
                 Todo todoitem= createTodo(resultSet);
-                optionalTodo = Optional.ofNullable(todoitem);
+                optionalTodo = Optional.ofNullable(todoitem); // It will return everytype of person including NULL
             }
         } catch (SQLException throwables) {
             throwables.printStackTrace();
@@ -85,6 +101,13 @@ public class TodoItemsInterfaceRepositoty implements TodoItemsInterface{
         statement.setInt(1,id);
         return statement;
     }
+
+    private PreparedStatement createFindByAssignee(Connection connection, String FIND_ALL_ASSIGNEE, int id) throws SQLException {
+
+        PreparedStatement statement= connection.prepareStatement(FIND_ALL_ASSIGNEE);
+        statement.setInt(1,id);
+        return statement;
+    }
     @Override
     public Collection<Todo> findByDoneStatus(boolean isDone) {
         return null;
@@ -92,7 +115,20 @@ public class TodoItemsInterfaceRepositoty implements TodoItemsInterface{
 
     @Override
     public Collection<Todo> findByAssignee(int AssigneeId) {
-        return null;
+        List<Todo> todoList = new ArrayList<>();
+        try(
+                Connection connection=dbConnection.getConnection();
+                PreparedStatement statement = createFindByAssignee(connection,FIND_ALL_ASSIGNEE,AssigneeId);
+                ResultSet resultSet=statement.executeQuery();
+        ) {
+            while(resultSet.next())
+            {
+                todoList.add(createTodo(resultSet));
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return todoList;
     }
 
     @Override
@@ -106,7 +142,21 @@ public class TodoItemsInterfaceRepositoty implements TodoItemsInterface{
     }
 
     @Override
-    public boolean deleteById(int todoItemsId) {
-        return false;
+    public int deleteById(int todoItemsId) {
+        int rowsAffected = 0;
+
+        try (Connection connection = dbConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(DELETE_PERSON)) {
+            statement.setInt(1, todoItemsId);
+            rowsAffected = statement.executeUpdate();
+            rowsAffected++;
+            System.out.println("Record number " + todoItemsId +  " is deleted");
+
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+
+        return rowsAffected;
     }
-}
+    }
+

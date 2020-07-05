@@ -13,12 +13,23 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-public class TodoItemsInterfaceRepositoty implements TodoItemsInterface{
+public class TodoItemsInterfaceRepositoty implements TodoItemsInterface {
     private static final String FIND_BY_ID = "SELECT * FROM todo_item where todo_id = ?";
     public static final String FIND_BY_NAME_LIKE = "SELECT * FROM todo_item where title LIKE ?";
-    public static final String FIND_ALL="SELECT * FROM todo_item";
-    public static final String FIND_ALL_ASSIGNEE ="SELECT * FROM todo_item where assignee_id= ?";
-    private static final String DELETE_PERSON = "DELETE FROM todo_item WHERE todo_id=?" ;
+    public static final String FIND_ALL = "SELECT * FROM todo_item";
+
+    // public static final String FIND_ALL_ASSIGNEE ="SELECT * FROM todo_item\n" +  " INNER JOIN person ON todo_item.assignee_id=person.person_id where assignee_id= ?";
+    public static final String FIND_ALL_ASSIGNEE = "SELECT * FROM todo_item where assignee_id= ?";
+    // public static final String FIND_ALL_ASSIGNEE_NAME ="SELECT * FROM todo_item where assignee_id=person_id";
+    public static final String FIND_ALL_ASSIGNEE_NAME = "SELECT * FROM todo_item\n" +
+            "    INNER JOIN person ON todo_item.assignee_id=person.person_id;";
+    public static final String FIND_ALL_BY_DONE_STATUS = "SELECT * FROM todo_item where done =?";
+    private static final String DELETE_PERSON = "DELETE FROM todo_item WHERE todo_id=?";
+    public static final String SELECT_FROM_TODO_ITEM_WHERE_DONE = "SELECT * FROM todo_item where done =?";
+
+    //SELECT Orders.OrderID, Customers.CustomerName, Orders.OrderDate
+    //FROM Orders
+    //INNER JOIN Customers ON Orders.CustomerID=Customers.CustomerID;
     @Override
     public Todo create(Todo todo) {
 //  public Person create(Person person)
@@ -39,13 +50,12 @@ public class TodoItemsInterfaceRepositoty implements TodoItemsInterface{
     @Override
     public Collection<Todo> findAll() {
         List<Todo> todoList = new ArrayList<>();
-        try(
-                Connection connection=dbConnection.getConnection();
-                PreparedStatement statement=connection.prepareStatement(FIND_ALL);
-                ResultSet resultSet=statement.executeQuery();
+        try (
+                Connection connection = dbConnection.getConnection();
+                PreparedStatement statement = connection.prepareStatement(FIND_ALL);
+                ResultSet resultSet = statement.executeQuery();
         ) {
-            while(resultSet.next())
-            {
+            while (resultSet.next()) {
                 todoList.add(createTodo(resultSet));
             }
         } catch (SQLException throwables) {
@@ -59,15 +69,14 @@ public class TodoItemsInterfaceRepositoty implements TodoItemsInterface{
 
         Optional<Todo> optionalTodo = Optional.empty();
 
-        try(
-                Connection connection= dbConnection.getConnection();
-                PreparedStatement statement = createFindById(connection,FIND_BY_ID ,id);
-                ResultSet resultSet= statement.executeQuery();
+        try (
+                Connection connection = dbConnection.getConnection();
+                PreparedStatement statement = createFindById(connection, FIND_BY_ID, id);
+                ResultSet resultSet = statement.executeQuery();
         ) {
 
-            while(resultSet.next())
-            {
-                Todo todoitem= createTodo(resultSet);
+            while (resultSet.next()) {
+                Todo todoitem = createTodo(resultSet);
                 optionalTodo = Optional.ofNullable(todoitem); // It will return everytype of person including NULL
             }
         } catch (SQLException throwables) {
@@ -97,32 +106,61 @@ public class TodoItemsInterfaceRepositoty implements TodoItemsInterface{
 
     private PreparedStatement createFindById(Connection connection, String FIND_BY_ID, int id) throws SQLException {
 
-        PreparedStatement statement= connection.prepareStatement(FIND_BY_ID);
-        statement.setInt(1,id);
+        PreparedStatement statement = connection.prepareStatement(FIND_BY_ID);
+        statement.setInt(1, id);
+        return statement;
+    }
+
+    private PreparedStatement createFindByDoneStatus(Connection connection, String SELECT_FROM_TODO_ITEM_WHERE_DONE, boolean id) throws SQLException {
+
+        PreparedStatement statement = connection.prepareStatement(SELECT_FROM_TODO_ITEM_WHERE_DONE);
+        statement.setBoolean(1, id);
         return statement;
     }
 
     private PreparedStatement createFindByAssignee(Connection connection, String FIND_ALL_ASSIGNEE, int id) throws SQLException {
 
-        PreparedStatement statement= connection.prepareStatement(FIND_ALL_ASSIGNEE);
-        statement.setInt(1,id);
+        PreparedStatement statement = connection.prepareStatement(FIND_ALL_ASSIGNEE);
+        statement.setInt(1, id);
         return statement;
     }
+
+    private PreparedStatement createFindByAssigneePerson(Connection connection, String FIND_ALL_ASSIGNEE, Person person) throws SQLException {
+
+        PreparedStatement statement = connection.prepareStatement(FIND_ALL_ASSIGNEE);
+        statement.setString(1, person.getFirstName());
+        // statement.setString(2,person.getLastName());
+        statement.execute();
+        return statement;
+    }
+
     @Override
-    public Collection<Todo> findByDoneStatus(boolean isDone) {
-        return null;
+    public List<Todo> findByDoneStatus(boolean isDone) {
+        List<Todo> todoList = new ArrayList<>();
+        try (
+                Connection connection = dbConnection.getConnection();
+                PreparedStatement statement = createFindByDoneStatus(connection, SELECT_FROM_TODO_ITEM_WHERE_DONE, isDone);
+                ResultSet resultSet = statement.executeQuery();
+        ) {
+            while (resultSet.next()) {
+                todoList.add(createTodo(resultSet));
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return todoList;
+
     }
 
     @Override
     public Collection<Todo> findByAssignee(int AssigneeId) {
         List<Todo> todoList = new ArrayList<>();
-        try(
-                Connection connection=dbConnection.getConnection();
-                PreparedStatement statement = createFindByAssignee(connection,FIND_ALL_ASSIGNEE,AssigneeId);
-                ResultSet resultSet=statement.executeQuery();
+        try (
+                Connection connection = dbConnection.getConnection();
+                PreparedStatement statement = createFindByAssignee(connection, FIND_ALL_ASSIGNEE, AssigneeId);
+                ResultSet resultSet = statement.executeQuery();
         ) {
-            while(resultSet.next())
-            {
+            while (resultSet.next()) {
                 todoList.add(createTodo(resultSet));
             }
         } catch (SQLException throwables) {
@@ -132,8 +170,21 @@ public class TodoItemsInterfaceRepositoty implements TodoItemsInterface{
     }
 
     @Override
-    public Collection<Todo> findByAssignee(Person person) {
-        return null;
+    public Collection<Todo> findByAssigneeName(Person person) {
+        List<Todo> todoList = new ArrayList<>();
+        try (
+                Connection connection = dbConnection.getConnection();
+                //   PreparedStatement statement = createFindByAssigneePerson(connection,FIND_ALL_ASSIGNEE_NAME,person);
+                PreparedStatement statement = connection.prepareStatement(FIND_ALL_ASSIGNEE_NAME);
+                ResultSet resultSet = statement.executeQuery();
+        ) {
+            while (resultSet.next()) {
+                todoList.add(createTodo(resultSet));
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return todoList;
     }
 
     @Override
@@ -150,13 +201,10 @@ public class TodoItemsInterfaceRepositoty implements TodoItemsInterface{
             statement.setInt(1, todoItemsId);
             rowsAffected = statement.executeUpdate();
             rowsAffected++;
-            System.out.println("Record number " + todoItemsId +  " is deleted");
-
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
-
         return rowsAffected;
     }
-    }
+}
 

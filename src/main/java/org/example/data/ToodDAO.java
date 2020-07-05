@@ -8,7 +8,6 @@ public class ToodDAO {
     public Todo create(Todo item) {
         if (item.getTodoId() != 0)
             throw new IllegalArgumentException("Not valid entry"); // try update instead
-
         Connection connection = null;
         PreparedStatement statement = null;
         ResultSet itemSet = null;
